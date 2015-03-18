@@ -10,6 +10,7 @@
 
 - name: "Gather facts for masters in {{ oo_env }}"
   hosts: "tag_env-host-type_{{ oo_env }}-openshift-master"
+
 - name: Configure instances
   hosts: oo_hosts_to_config
   vars_files:
