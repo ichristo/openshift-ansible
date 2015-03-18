@@ -16,8 +16,8 @@
 * One or more RHEL 7.1 VMs
 * ssh key based auth for the root user needs to be pre-configured from the host
   running ansible to the remote hosts
-* The v3-beta2 branch of openshift-online-ansible from
-  https://github.com/detiber/openshift-online-ansible/tree/v3-beta2
+* The v3-beta2 branch of openshift-ansible from
+  https://github.com/detiber/openshift-ansible/tree/v3-beta2
   
   ```sh
   git clone https://github.com/detiber/openshift-ansible.git -b v3-beta2
