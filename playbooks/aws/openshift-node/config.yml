@@ -24,7 +24,6 @@
             | oo_select_keys(groups['tag_env-host-type_' + oo_env + '-openshift-master'])
             | oo_collect(attribute='ec2_ip_address') | default(['']) }}"
   roles:
-    - repos
-    - docker
     - openshift-node
     - openshift-sdn-node
+    - docker

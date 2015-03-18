@@ -20,7 +20,6 @@
         | oo_select_keys(groups['tag_env-host-type_' + oo_env + '-openshift-node'])
         | oo_collect(attribute='ansible_default_ipv4.address') | default(['']) }}"
   roles:
-    - repos
     - openshift-master
     - openshift-sdn-master
     - pods
