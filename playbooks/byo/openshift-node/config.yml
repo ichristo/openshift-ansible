@@ -11,6 +11,5 @@
           | oo_collect(attribute='ansible_default_ipv4.address') }}"
     openshift_master_public_ips: "{{ openshift_master_ips }}"
   roles:
-  - repos
   - openshift_node
   - openshift_sdn_node

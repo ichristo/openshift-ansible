@@ -5,6 +5,5 @@
 - name: Configure master instances
   hosts: masters
   roles:
-  - repos
   - openshift_master
   - openshift_sdn_master
