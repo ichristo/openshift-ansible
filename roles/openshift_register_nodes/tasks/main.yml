@@ -1,0 +1,48 @@
+---
+# TODO: have the playbooks define the openshift_nodes dictionary with the required
+# params
+
+# TODO: have the playbooks define the openshift_master_url and
+# openshift_public_master_url
+
+- name: Create certificates and kubeconfigs for nodes
+  command: "/usr/bin/openshift admin create-node-cert --cert='openshift.local.certificates/node-{{ item.hostname }}/cert.crt' --key='openshift.local.certificates/node-{{ item.hostname }}/key.key' --node-name='{{ item.hostname }}'"
+  args:
+    chdir: /var/lib/openshift/
+    creates: /var/lib/openshift/openshift.certificates.local/node-{{ item.hostname }}/cert.crt
+  with_items: openshift_nodes
+
+  command: "/usr/bin/openshift admin create-kubeconfig
+  --client_cert='openshift.local.certificates/node-{{ item.hostname }}/cert.crt' --client_key='openshift.local.certificates/node-{{ item.hostname }}/key.key' --kubeconfig='openshift.local.certificates/node-{{ item.hostname }}/.kubeconfig' --master='{{ openshift_master_url }}' --public-master='{{ openshift_public_master_url }}'"
+  args:
+    chdir: /var/lib/openshift/
+    creates: /var/lib/openshift/openshift.certificates.local/node-{{ item.hostname }}/.kubeconfig
+  with_items: openshift_nodes
+
+# TODO: generate the node configs (openshift start node --write-config
+# --config='openshift.local.certificates/node-{{ item.hostname }}'
+# --kubeconfig='openshift.local.certificates/node-{{ item.hostname }}'
+# will need to modify the generated node config as needed
+# (servingInfo.{certFile,clientCA,keyFile})
+#
+# Alternatively, I think we can get away with having everything in the proper
+# directory under /var/lib/openshift/openshift.local.certificates and get away
+# without generating the node config
+
+- name: Register unregistered nodes
+  kubernetes_register_node:
+    name: "{{ item['name'] }}"
+    api_version: openshift_kube_api_version
+    cpu: "{{ item['cpu'] }}"
+    memory: "{{ item['memory'] }}"
+    pod_cidr: "{{ item['pod_cidr'] }}"
+    host_ip: "{{ item['host_ip'] }}"
+    labels: "{{ item['labels'] }}"
+    annotations: "{{ item['annotations'] }}"
+    # TODO: support customizing other attributes such as: client_config,
+    # client_cluster, client_context, client_user
+    # TODO: update for v1beta3 changes after rebase: hostnames, external_ips,
+    # internal_ips, external_id
+  with_items: openshift_nodes
+
+# TODO: copy the generated certs and configs to the nodes

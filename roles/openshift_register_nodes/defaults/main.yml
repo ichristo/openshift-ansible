@@ -1,0 +1,3 @@
+---
+openshift_kube_api_version: v1beta1
+openshift_nodes: {}
