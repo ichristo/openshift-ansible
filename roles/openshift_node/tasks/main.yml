@@ -2,11 +2,20 @@
 # TODO: allow for overriding default ports where possible
 # TODO: trigger the external service when restart is needed
 
-- name: Test if node certs exist
-  stat: path=/usr/lib/openshift/openshift.local.certificates/node-{{ openshift_hostname }}
-  register: node_cert_dir
-- fail: msg="Node certificates are not present"
-  when: node_cert_dir.stat.isdir is not defined or not node_cert_dir.stat.isdir
+# TODO: test actual cert/config names as well as directories
+- name: Test if node certs and config exist
+  stat: path={{ item }}
+  failed_when: not result.stat.exists
+  register: result
+  with_items:
+  - "{{ cert_path }}"
+  - "{{ cert_path }}/cert.crt"
+  - "{{ cert_path }}/key.key"
+  - "{{ cert_path }}/.kubeconfig"
+  - "{{ cert_path }}/server.crt"
+  - "{{ cert_path }}/server.key"
+  - "{{ cert_parent_path }}/ca/cert.crt"
+  #- "{{ cert_path }}/node.yaml"
 
 - name: Install OpenShift Node package
   yum: pkg=openshift-node state=installed
