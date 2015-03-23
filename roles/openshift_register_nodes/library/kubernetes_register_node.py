@@ -254,16 +254,8 @@ class Node:
         return False
 
     def create(self):
-        # TODO: this needs to be udpated once osc create recognizes api
-        # versions other than v1beta1
-        if self.node['apiVersion'] == 'v1beta1':
-            cmd = ['/usr/bin/osc'] + self.client_opts + ['create', 'node',
+        cmd = ['/usr/bin/osc'] + self.client_opts + ['create', 'node',
                    '-f', '-']
-        else:
-            cmd = ['/usr/bin/openshift'] + self.client_opts + ['kube',
-                   '--api-version=' + self.node['apiVersion'], '-f',
-                   '-', 'create']
-
         rc, output, error = self.module.run_command(cmd,
                                                data=self.module.jsonify(self.get_node()))
         if rc != 0:
@@ -277,6 +269,21 @@ class Node:
                                  output=output, error=error,
                                  node=self.get_node())
         else:
+            # TODO: this needs to be udpated once osc create recognizes api
+            # versions other than v1beta1
+            if self.node['apiVersion'] == 'v1beta3':
+                patch = dict(apiVersion='v1beta3',
+                             status=self.node['status'].get_status())
+                # TODO: create method call to get patch json
+                cmd = ['/usr/bin/osc'] + self.client_opts + ['update', 'nodes',
+                        self.node['metadata']['name'],
+                        '--patch=' + self.module.jsonify(patch)]
+                rc, output, error = self.module.run_command(cmd)
+                if rc != 0:
+                    self.module.fail_json(msg="Patching node for v1beta3 attributes failed.",
+                                          rc=rc, stdout=output, stderr=error,
+                                          patch=patch, z_cmd=cmd)
+
             return True
 
 def main():
