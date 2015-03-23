@@ -4,6 +4,22 @@
 
 - name: Configure master instances
   hosts: masters
+  pre_tasks:
+  - command: hostname -f
+    register: hostname_result
+    when: openshift_hostname is not defined
+
+  - set_fact: openshift_hostname={{ hostname_result.stdout }}
+    when: hostname_result is defined
+
+  - set_fact: openshift_public_hostname={{ openshift_hostname }}
+    when: openshift_public_hostname is not defined
+
+  - set_fact: openshift_ip={{ ansible_default_ipv4.address }}
+    when: openshift_ip is not defined
+
+  - set_fact: openshift_public_ip={{ openshift_ip }}
+    when: openshift_public_ip is not defined
   roles:
   - openshift_master
   - openshift_sdn_master

@@ -2,7 +2,7 @@
 - name: Gather facts for masters hosts
   hosts: masters
   tasks:
-  # TODO: create an openshift_facts module and move this there
+  # TODO: create an openshift_master_facts module and move this there
   - set_fact:
       openshift_master_ip: "{{ openshift_ip }}"
       openshift_master_api_url: "{{ openshift_api_url }}"
@@ -16,7 +16,26 @@
 - name: Gather and set facts for node hosts
   hosts: nodes
   tasks:
+  #TODO: create an openshift_facts module in openshift_common to encapsulate
+  #these values
+  - command: hostname -f
+    register: hostname_result
+    when: openshift_hostname is not defined
+
+  - set_fact: openshift_hostname={{ hostname_result.stdout }}
+    when: hostname_result is defined
+
+  - set_fact: openshift_public_hostname={{ openshift_hostname }}
+    when: openshift_public_hostname is not defined
+
+  - set_fact: openshift_ip={{ ansible_default_ipv4.address }}
+    when: openshift_ip is not defined
+
+  - set_fact: openshift_public_ip={{ openshift_ip }}
+    when: openshift_public_ip is not defined
+
   - set_fact:
+      # TODO: create an openshift_node_facts module and move this there
       openshift_node_hostname: "{{ openshift_hostname }}"
       openshift_node_name: "{{ openshift_hostname }}"
       openshift_node_cpu: "{{ openshift_node_cpu if openshift_node_cpu else ansible_processor_cores }}"
