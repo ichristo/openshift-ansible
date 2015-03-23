@@ -41,7 +41,13 @@
       openshift_node_cpu: "{{ openshift_node_cpu if openshift_node_cpu else ansible_processor_cores }}"
       openshift_node_memory: "{{ openshift_node_memory if openshift_node_memory else (ansible_memtotal_mb|int * 1024 * 1024 * 0.75)|int }}"
       openshift_node_pod_cidr: "{{ openshift_node_pod_cidr if openshift_node_pod_cidr else None }}"
-      openshift_node_host_ip: "{{ openshift_ip }}"
+      openshift_node_hostnames:
+      - "{{ openshift_hostname }}"
+      - "{{ openshift_public_hostname }}"
+      openshift_node_external_ips:
+      - "{{ openshift_public_ip }}"
+      openshift_node_internal_ips:
+      - "{{ openshift_ip }}"
       openshift_node_labels: "{{ openshift_node_labels if openshift_node_labels else {} }}"
       openshift_node_annotations: "{{ openshift_node_annotations if openshift_node_annotations else {} }}"
 

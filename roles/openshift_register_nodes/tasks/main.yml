@@ -60,12 +60,12 @@
     cpu: "{{ item.openshift_node_cpu if item.openshift_node_cpu else None }}"
     memory: "{{ item.openshift_node_memory if item.openshift_node_memory else None }}"
     pod_cidr: "{{ item.openshift_node_pod_cidr if item.openshift_node_pod_cidr else None }}"
-    host_ip: "{{ item.openshift_node_host_ip }}"
+    hostnames: "{{ item.openshift_node_hostnames }}"
+    external_ips: "{{ item.openshift_node_external_ips }}"
+    internal_ips: "{{ item.openshift_node_internal_ips }}"
     labels: "{{ item.openshift_node_labels if item.openshift_node_labels else {} }}"
     annotations: "{{ item.openshift_node_annotations if item.openshift_node_annotations else {} }}"
     # TODO: support customizing other attributes such as: client_config,
     # client_cluster, client_context, client_user
-    # TODO: update for v1beta3 changes after rebase: hostnames, external_ips,
-    # internal_ips, external_id
   with_items: openshift_nodes
   register: register_result

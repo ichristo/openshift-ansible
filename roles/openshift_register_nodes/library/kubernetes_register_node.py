@@ -189,11 +189,11 @@ class NodeStatus:
     def __init__(self, version, externalIPs = [], internalIPs = [],
                  hostnames = []):
         if version == 'v1beta3':
-            self.status = dict(addresses = addAddresses('ExternalIP',
+            self.status = dict(addresses = self.addAddresses('ExternalIP',
                                                         externalIPs) +
-                                           addAddresses('InternalIP',
+                                           self.addAddresses('InternalIP',
                                                         internalIPs) +
-                                           addAddresses('Hostname',
+                                           self.addAddresses('Hostname',
                                                         hostnames))
 
     def get_status(self):
@@ -234,7 +234,7 @@ class Node:
         if self.node['apiVersion'] == 'v1beta1':
             return self.node['id']
         elif self.node['apiVersion'] == 'v1beta3':
-            return self.node['name']
+            return self.node['metadata']['name']
 
     def get_node(self):
         node = self.node.copy()
@@ -254,7 +254,16 @@ class Node:
         return False
 
     def create(self):
-        cmd = ['/usr/bin/osc'] + self.client_opts + ['create', 'node', '-f', '-']
+        # TODO: this needs to be udpated once osc create recognizes api
+        # versions other than v1beta1
+        if self.node['apiVersion'] == 'v1beta1':
+            cmd = ['/usr/bin/osc'] + self.client_opts + ['create', 'node',
+                   '-f', '-']
+        else:
+            cmd = ['/usr/bin/openshift'] + self.client_opts + ['kube',
+                   '--api-version=' + self.node['apiVersion'], '-f',
+                   '-', 'create']
+
         rc, output, error = self.module.run_command(cmd,
                                                data=self.module.jsonify(self.get_node()))
         if rc != 0:
