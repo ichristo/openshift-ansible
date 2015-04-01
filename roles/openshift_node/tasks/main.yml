@@ -14,13 +14,13 @@
   register: result
   with_items:
   - "{{ cert_path }}"
-  - "{{ cert_path }}/cert.crt"
-  - "{{ cert_path }}/key.key"
+  - "{{ cert_path }}/ca.crt"
+  - "{{ cert_path }}/client.crt"
+  - "{{ cert_path }}/client.key"
   - "{{ cert_path }}/.kubeconfig"
+  - "{{ cert_path }}/node-config.yaml"
   - "{{ cert_path }}/server.crt"
   - "{{ cert_path }}/server.key"
-  - "{{ cert_parent_path }}/ca/cert.crt"
-  #- "{{ cert_path }}/node.yaml"
 
 - name: Install OpenShift Node package
   yum: pkg=openshift-node state=installed

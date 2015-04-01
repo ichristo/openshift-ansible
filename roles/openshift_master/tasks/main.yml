@@ -17,6 +17,14 @@
       public_console_url: "{{ openshift_master_public_console_url | default(None) }}"
       etcd_use_ssl: "{{ openshift_master_etcd_use_ssl | default(None) }}"
 
+# TODO: These values need to be configurable
+- name: Set dns OpenShift facts
+  openshift_facts:
+    role: 'dns'
+    local_facts:
+      ip: "{{ openshift.common.ip }}"
+      domain: local
+
 - name: Install OpenShift Master package
   yum: pkg=openshift-master state=installed
 

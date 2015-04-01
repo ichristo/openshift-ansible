@@ -22,7 +22,7 @@ class OpenShiftFactsFileWriteError(Exception):
     pass
 
 class OpenShiftFacts():
-    known_roles = ['common', 'master', 'node', 'master_sdn', 'node_sdn']
+    known_roles = ['common', 'master', 'node', 'master_sdn', 'node_sdn', 'dns']
 
     def __init__(self, role, filename, local_facts):
         self.changed = False
