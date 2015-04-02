@@ -47,7 +47,7 @@
     cert_base_path: /var/lib/openshift
     cert_parent_path: "{{ cert_base_path }}/{{ cert_parent_rel_path }}"
     cert_path: "{{ cert_base_path }}/{{ cert_rel_path }}"
-    openshift_sdn_master_url: http://{{ hostvars[groups['masters'][0]].openshift.common.hostname }}:4001
+    openshift_sdn_master_url: https://{{ hostvars[groups['masters'][0]].openshift.common.hostname }}:4001
   pre_tasks:
   - name: Ensure certificate directories exists
     file:

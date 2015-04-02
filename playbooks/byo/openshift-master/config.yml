@@ -7,3 +7,8 @@
   roles:
   - openshift_master
   - openshift_sdn_master
+  vars:
+    cert_parent_path: "{{ cert_base_path }}/{{ cert_parent_rel_path }}"
+    cert_path: "{{ cert_base_path }}/{{ cert_rel_path }}"
+    openshift_sdn_master_url: https://{{ hostvars[groups['masters'][0]].openshift.common.hostname }}:4001
+

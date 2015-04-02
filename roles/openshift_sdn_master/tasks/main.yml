@@ -17,7 +17,10 @@
   lineinfile:
     dest: /etc/sysconfig/openshift-sdn-master
     regexp: '^OPTIONS='
-    line: "OPTIONS=\"-v={{ openshift.master_sdn.debug_level }}\""
+    line: "OPTIONS=\"-v={{ openshift.master_sdn.debug_level }} -etcd-endpoints={{ openshift_master_sdn_url}}
+      -etcd-cafile={{ openshift_cert_dir }}/node-{{ item.openshift.common.hostname }}/ca.crt
+      -etcd-certfile={{ openshift_cert_dir }}/node-{{ item.openshift.common.hostname }}/client.crt
+      -etcd-keyfile={{ openshift_cert_dir }}/node-{{ item.openshift.common.hostname }}/client.key\""
   notify:
   - restart openshift-sdn-master
 
