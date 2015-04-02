@@ -1,0 +1,3 @@
+---
+openshift_node_cert_dir: "{{ openshift_cert_dir }}/node-{{ openshift.common.hostname }}"
+openshift_node_cert_relative_dir: "{{ openshift_cert_relative_dir}}/node-{{ openshift.common.hostname }}"

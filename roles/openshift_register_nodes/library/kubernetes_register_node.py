@@ -255,7 +255,7 @@ class Node:
         return False
 
     def create(self):
-        cmd = ['/usr/bin/osc'] + self.client_opts + ['create', 'node', '-f', '-']
+        cmd = ['/usr/bin/osc'] + self.client_opts + ['create', '-f', '-']
         rc, output, error = self.module.run_command(cmd,
                                                data=self.module.jsonify(self.get_node()))
         if rc != 0:

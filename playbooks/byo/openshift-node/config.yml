@@ -8,15 +8,21 @@
   # need to make sure to set the node properties beforehand if we do not want
   # the defaults
   - openshift_facts:
-      role: 'node'
-      local_facts:
-        hostname: "{{ openshift_hostname | default(None) }}"
-        external_id: "{{ openshift_node_external_id | default(None) }}"
-        resources_cpu: "{{ openshfit_node_resources_cpu | default(None) }}"
-        resources_memory: "{{ openshfit_node_resources_memory | default(None) }}"
-        pod_cidr: "{{ openshfit_node_pod_cidr | default(None) }}"
-        labels: "{{ openshfit_node_labels | default(None) }}"
-        annotations: "{{ openshfit_node_annotations | default(None) }}"
+      role: "{{ item.role }}"
+      local_facts: "{{ item.local_facts }}"
+    with_items:
+      - role: common
+        local_facts:
+          hostname: "{{ openshift_hostname | default(None) }}"
+          public_hostname: "{{ openshift_public_hostname | default(None) }}"
+      - role: node
+        local_facts:
+          external_id: "{{ openshift_node_external_id | default(None) }}"
+          resources_cpu: "{{ openshfit_node_resources_cpu | default(None) }}"
+          resources_memory: "{{ openshfit_node_resources_memory | default(None) }}"
+          pod_cidr: "{{ openshfit_node_pod_cidr | default(None) }}"
+          labels: "{{ openshfit_node_labels | default(None) }}"
+          annotations: "{{ openshfit_node_annotations | default(None) }}"
 
 
 - name: Register nodes
@@ -34,28 +40,20 @@
     synchronize:
       mode: pull
       checksum: yes
-      src: /var/lib/openshift/openshift.local.certificates
+      src: "{{ openshift_cert_dir }}"
       dest: "{{ mktemp.stdout }}"
 
-
+# TODO: have node config reside in /etc/openshift
 - name: Configure node instances
   hosts: nodes
   vars:
     sync_tmpdir: "{{ hostvars[groups['masters'][0]].mktemp.stdout }}"
-    cert_parent_rel_path: openshift.local.certificates
-    cert_rel_path: "{{ cert_parent_rel_path }}/node-{{ openshift.common.hostname }}"
-    cert_base_path: /var/lib/openshift
-    cert_parent_path: "{{ cert_base_path }}/{{ cert_parent_rel_path }}"
-    cert_path: "{{ cert_base_path }}/{{ cert_rel_path }}"
     openshift_sdn_master_url: https://{{ hostvars[groups['masters'][0]].openshift.common.hostname }}:4001
   pre_tasks:
-  - name: Ensure certificate directories exists
+  - name: Ensure certificate directory exists
     file:
-      path: "{{ item }}"
+      path: "{{ openshift_node_cert_dir }}"
       state: directory
-    with_items:
-    - "{{ cert_path }}"
-    - "{{ cert_parent_path }}/ca"
 
   # TODO: notify restart openshift-node and/or restart openshift-sdn-node,
   # possibly test service started time against certificate/config file
@@ -63,15 +61,10 @@
   - name: Sync certs to nodes
     synchronize:
       checksum: yes
-      src: "{{ item.src }}"
-      dest: "{{ item.dest }}"
+      src: "{{ sync_tmpdir }}/{{ openshift_node_cert_relative_dir }}/"
+      dest: "{{ openshift_node_cert_dir }}/"
       owner: no
       group: no
-    with_items:
-    - src: "{{ sync_tmpdir }}/{{ cert_rel_path }}"
-      dest: "{{ cert_parent_path }}"
-    - src: "{{ sync_tmpdir }}/{{ cert_parent_rel_path }}/ca/cert.crt"
-      dest: "{{ cert_parent_path }}/ca/cert.crt"
   - local_action: file name={{ sync_tmpdir }} state=absent
     run_once: true
   roles:
