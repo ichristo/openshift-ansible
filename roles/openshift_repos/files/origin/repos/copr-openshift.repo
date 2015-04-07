@@ -1,0 +1,6 @@
+[jdetiber-origin-epel-7]
+name=Copr repo for epel7-origin owned by jdetiber
+baseurl=https://copr-be.cloud.fedoraproject.org/results/jdetiber/origin/epel-7-$basearch/
+skip_if_unavailable=True
+gpgcheck=0
+enabled=1
