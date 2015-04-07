@@ -25,6 +25,7 @@
         instances: "{{ master_names }}"
         cluster: "{{ cluster_id }}"
         type: "{{ k8s_type }}"
+        deployment_type: "{{ oo_deployment_type }}"
 
     - set_fact: k8s_type="node"
 
@@ -45,6 +46,7 @@
         instances: "{{ node_names }}"
         cluster: "{{ cluster_id }}"
         type: "{{ k8s_type }}"
+        deployment_type: "{{ oo_deployment_type }}"
 
 - hosts: "tag_env-{{ cluster_id }}"
   roles:

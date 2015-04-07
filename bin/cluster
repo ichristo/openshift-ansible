@@ -114,6 +114,14 @@ class Cluster(object):
         if args.verbose > 0:
             verbose = '-{}'.format('v' * args.verbose)
 
+        if args.deployment_type:
+            env['oo_deployment_type'] = args.deployment_type
+        elif 'OS_DEPLOYMENT_TYPE' in os.environ:
+            env['oo_deployment_type'] = os.environ.get('OS_DEPLOYMENT_TYPE')
+        else:
+            env['oo_deployment_type'] = 'origin'
+
+
         ansible_env = '-e \'{}\''.format(
             ' '.join(['%s=%s' % (key, value) for (key, value) in env.items()])
         )
@@ -149,6 +157,7 @@ if __name__ == '__main__':
     meta_parser = argparse.ArgumentParser(add_help=False)
     meta_parser.add_argument('provider', choices=providers, help='provider')
     meta_parser.add_argument('cluster_id', help='prefix for cluster VM names')
+    meta_parser.add_argument('-t', '--deployment-type', choices=['origin', 'online', 'enterprise'], help='Deployment type.Must be one of %(choices)s (default: %(default)s)' )
 
     action_parser = parser.add_subparsers(dest='action', title='actions', description='Choose from valid actions')
 
