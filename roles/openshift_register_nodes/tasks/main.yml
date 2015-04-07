@@ -1,7 +1,7 @@
 ---
 # TODO: support new create-config command to generate node certs and config
 # TODO: recreate master/node configs if settings that affect the configs
-# change (hostname, public_hostname, ip, public_ip, openshift_pod_image, etc)
+# change (hostname, public_hostname, ip, public_ip, etc)
 
 # TODO: use a template lookup here
 # TODO: create a failed_when condition
