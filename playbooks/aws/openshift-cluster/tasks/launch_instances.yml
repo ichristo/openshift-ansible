@@ -26,6 +26,7 @@
     env: "{{ cluster }}"
     host_type: "{{ type }}"
     env_host_type: "{{ cluster }}-openshift-{{ type }}"
+    user_data: "{{ lookup('template', '../templates/user_data.j2') if type == 'node' else None | default('omit') }}"
 
 - set_fact:
     volumes: "{{ volume_defs | oo_ec2_volume_definition(host_type, docker_vol_ephemeral | bool) }}"
@@ -39,6 +40,7 @@
     instance_type: "{{ machine_type }}"
     image: "{{ machine_image }}"
     count: "{{ instances | oo_len }}"
+    user_data: "{{ user_data }}"
     wait: yes
     instance_tags:
       created-by: "{{ created_by }}"
